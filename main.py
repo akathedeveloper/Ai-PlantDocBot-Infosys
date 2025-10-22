@@ -9,23 +9,18 @@ import joblib
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from pathlib import Path
 
-# -------------------------------------------------------
-# 1️⃣ FastAPI Initialization
-# -------------------------------------------------------
+# FastAPI Initialization
 app = FastAPI(
     title="PlantDocBot API 🌿",
     description="API for Plant Disease Detection using Image and Text Models",
     version="1.0"
 )
 
-# -------------------------------------------------------
-# 2️⃣ Device Configuration
-# -------------------------------------------------------
+# Device Configuration
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# -------------------------------------------------------
-# 3️⃣ Image Classification Model
-# -------------------------------------------------------
+
+# Image Classification Model
 class PlantDiseaseModel(torch.nn.Module):
     def __init__(self, num_classes=38):
         super(PlantDiseaseModel, self).__init__()
@@ -70,24 +65,49 @@ image_transform = transforms.Compose([
 
 # Class labels
 class_names = [
-    "Apple Scab","Apple___Black_rot","Apple___Cedar_apple_rust","Apple___healthy",
-    "Blueberry___healthy","Cherry_(including_sour)___Powdery_mildew","Cherry_(including_sour)___healthy",
-    "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot","Corn_(maize)___Common_rust_",
-    "Corn_(maize)___Northern_Leaf_Blight","Corn_(maize)___healthy",
-    "Grape___Black_rot","Grape___Esca_(Black_Measles)","Grape___Leaf_blight_(Isariopsis_Leaf_Spot)",
-    "Grape___healthy","Orange___Haunglongbing_(Citrus_greening)",
-    "Peach___Bacterial_spot","Peach___healthy","Pepper,_bell___Bacterial_spot","Pepper,_bell___healthy",
-    "Potato___Early_blight","Potato___Late_blight","Potato___healthy","Raspberry___healthy","Soybean___healthy",
-    "Squash___Powdery_mildew","Strawberry___Leaf_scorch","Strawberry___healthy",
-    "Tomato___Bacterial_spot","Tomato___Early_blight","Tomato___Late_blight",
-    "Tomato___Leaf_Mold","Tomato___Septoria_leaf_spot","Tomato___Spider_mites Two-spotted_spider_mite",
-    "Tomato___Target_Spot","Tomato___Tomato_mosaic_virus","Tomato___Tomato_Yellow_Leaf_Curl_Virus","Tomato___healthy"
+    "Apple - Scab",
+    "Apple - Black Rot",
+    "Apple - Cedar Apple Rust",
+    "Apple - Healthy",
+    "Blueberry - Healthy",
+    "Cherry - Powdery Mildew",
+    "Cherry - Healthy",
+    "Corn (Maize) - Cercospora Leaf Spot (Gray Leaf Spot)",
+    "Corn (Maize) - Common Rust",
+    "Corn (Maize) - Northern Leaf Blight",
+    "Corn (Maize) - Healthy",
+    "Grape - Black Rot",
+    "Grape - Esca (Black Measles)",
+    "Grape - Leaf Blight (Isariopsis Leaf Spot)",
+    "Grape - Healthy",
+    "Orange - Huanglongbing (Citrus Greening)",
+    "Peach - Bacterial Spot",
+    "Peach - Healthy",
+    "Pepper (Bell) - Bacterial Spot",
+    "Pepper (Bell) - Healthy",
+    "Potato - Early Blight",
+    "Potato - Late Blight",
+    "Potato - Healthy",
+    "Raspberry - Healthy",
+    "Soybean - Healthy",
+    "Squash - Powdery Mildew",
+    "Strawberry - Leaf Scorch",
+    "Strawberry - Healthy",
+    "Tomato - Bacterial Spot",
+    "Tomato - Early Blight",
+    "Tomato - Late Blight",
+    "Tomato - Leaf Mold",
+    "Tomato - Septoria Leaf Spot",
+    "Tomato - Spider Mites (Two-Spotted Spider Mite)",
+    "Tomato - Target Spot",
+    "Tomato - Mosaic Virus",
+    "Tomato - Yellow Leaf Curl Virus",
+    "Tomato - Healthy"
 ]
 
-# -------------------------------------------------------
-# 4️⃣ Text Classification Model
-# -------------------------------------------------------
-# ✅ Use resolved absolute path to the folder in same root
+
+
+# Text Classification Model
 text_model_path = Path("plant_classifier_model").resolve()
 
 # ✅ Load tokenizer and model safely from local files
@@ -115,22 +135,17 @@ def predict_text(text: str):
 
     return {"label": label, "confidence": confidence_score, "recommendation": recommendation}
 
-# -------------------------------------------------------
-# 5️⃣ Pydantic Models
-# -------------------------------------------------------
+
 class TextPredictionInputModel(BaseModel):
     input: str
 
-# -------------------------------------------------------
-# 6️⃣ Health Check
-# -------------------------------------------------------
+
+# Health Check
 @app.get("/health-check")
 def health_check():
     return {"status": "ok", "message": "PlantDocBot API is running 🚀"}
 
-# -------------------------------------------------------
-# 7️⃣ Image Prediction Endpoint
-# -------------------------------------------------------
+# Image Prediction Endpoint
 @app.post("/image-prediction")
 async def image_predict(file: UploadFile = File(...)):
     try:
@@ -160,9 +175,8 @@ async def image_predict(file: UploadFile = File(...)):
     except Exception as e:
         return {"error": str(e)}
 
-# -------------------------------------------------------
-# 8️⃣ Text Prediction Endpoint
-# -------------------------------------------------------
+
+# Text Prediction Endpoint
 @app.post("/text-prediction")
 def text_predict_endpoint(input_data: TextPredictionInputModel):
     try:
