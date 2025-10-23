@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+torch
+torchvision
+pillow
+pydantic
+python-multipart
+joblib
+transformers
+scikit-learn
