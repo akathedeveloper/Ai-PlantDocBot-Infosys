@@ -192,7 +192,7 @@ def predict_text(text: str):
         confidence, pred_id = torch.max(probs, dim=-1)
     
     label = encoder.inverse_transform([pred_id.item()])[0]
-    confidence_score = round(confidence.item(), 4)
+    confidence_score = round(confidence.item()*100, 2)
     recommendation = (
         "Your plant looks healthy 🌱"
         if "healthy" in label.lower()
@@ -224,7 +224,7 @@ async def image_predict(file: UploadFile = File(...)):
             confidence, pred_class = torch.max(probs, dim=1)
 
         label = class_names[pred_class.item()]
-        confidence_score = round(confidence.item(), 4)
+        confidence_score = round(confidence.item()*100, 2)
         recommendation = recommendations.get(label, "No specific recommendation available for this disease.")
 
 
